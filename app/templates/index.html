@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TODO App</title>
+</head>
+<body>
+    <h1>🧰 TODO Manager</h1>
+
+    <form action="/add" method="post">
+        <input type ="text" name="task" placeholder="New task" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <ul>
+        {% for task in tasks %}
+        <li>{{ task.text }} - {{ "✅" if task.done else "❌" }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
