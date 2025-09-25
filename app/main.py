@@ -1,10 +1,12 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import json
 import os
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Templates Folder
 templates = Jinja2Templates(directory="app/templates")
@@ -49,3 +51,4 @@ async def delete_task(request: Request, task_id: int):
         tasks.pop(task_id)
         save_tasks(tasks)
     return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
+

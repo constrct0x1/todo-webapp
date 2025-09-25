@@ -1,28 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>TODO App</title>
+<meta charset="UTF-8">
+<title>TODO App</title>
+<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>TODO List</h1>
-    <form action="/add" method="post">
-        <input type="text" name="task" placeholder="Enter a task" required>
-        <button type="submit">Add</button>
-    </form>
-    <ul>
+<h1> TODO Manager</h1>
+
+<form action="/add" method="post">
+    <input type="text" name="task" placeholder="Enter a task" required>
+    <button type="submit">Add</button>
+</form>
+<ul>
 {% for task in tasks %}
-    <li>
-        {{ task.text }}
-        <!-- Toggle status -->
-        <form action="/toggle/{{ loop.index0 }}" method="post" style="display:inline;">
-            <button type="submit">{{ "✅" if task.done else "❌" }}</button>
-        </form>
-        <!-- Delete -->
-        <form action="/delete/{{ loop.index0 }}" method="post" style="display:inline;">
-            <button type="submit">🗑 Delete</button>
-        </form>
-    </li>
+<li>
+  <form method="post" action="/toggle/{{ loop.index0 }}" class="task-form">
+    <div class="checkbox-wrapper-1">
+      <input type="checkbox" class="substituted" id="task-{{ loop.index0 }}" {% if task.done %}checked{% endif %} onchange="this.form.submit()">
+      <label for="task-{{ loop.index0 }}"></label>
+    </div>
+    <span class="task-text">{{ task.text }}</span>
+  </form>
+  <form method="post" action="/delete/{{ loop.index0 }}">
+    <button type="submit">Delete</button>
+  </form>
+</li>
 {% endfor %}
 </ul>
+
 </body>
 </html>
