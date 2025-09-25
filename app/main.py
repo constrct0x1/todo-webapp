@@ -1,23 +1,38 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from pathlib import Path
+import json
+import os
 
-app = FastAPI ()
+app = FastAPI()
 
 # Templates Folder
-templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
+templates = Jinja2Templates(directory="app/templates")
 
-# Temporary task storage (without JSON yet)
-tasks = []
+DATA_FILE = "data.json"
+
+# Helpers for JSON storage
+def load_tasks():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    return []
+
+def save_tasks(tasks):
+    with open(DATA_FILE, "w") as f:
+        json.dump(tasks, f, indent=4)
+        
+# Load tasks at startup
+tasks = load_tasks()
+
 
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
 
-@app.post("/add", response_class=HTMLResponse)
-async def add_task(request: Request, task: str = Form(...)):
-    tasks.append({"text": task, "done": False})
-    return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
+@app.post("/add")
+async def add_task(task: str = Form(...)):
+    tasks.append({"title": task, "done": False})
+    save_tasks(tasks) # ✅ Save to file
+    return RedirectResponse("/", status_code=303)
 
