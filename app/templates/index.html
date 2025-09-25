@@ -10,9 +10,19 @@
         <button type="submit">Add</button>
     </form>
     <ul>
-        {% for task in tasks %}
-            <li>{{ task.title }}</li>
-        {% endfor %}
-    </ul>
+{% for task in tasks %}
+    <li>
+        {{ task.text }}
+        <!-- Toggle status -->
+        <form action="/toggle/{{ loop.index0 }}" method="post" style="display:inline;">
+            <button type="submit">{{ "✅" if task.done else "❌" }}</button>
+        </form>
+        <!-- Delete -->
+        <form action="/delete/{{ loop.index0 }}" method="post" style="display:inline;">
+            <button type="submit">🗑 Delete</button>
+        </form>
+    </li>
+{% endfor %}
+</ul>
 </body>
 </html>

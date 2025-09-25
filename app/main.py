@@ -30,9 +30,22 @@ tasks = load_tasks()
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
 
-@app.post("/add")
-async def add_task(task: str = Form(...)):
-    tasks.append({"title": task, "done": False})
-    save_tasks(tasks) # ✅ Save to file
-    return RedirectResponse("/", status_code=303)
+@app.post("/add", response_class=HTMLResponse)
+async def add_task(request: Request, task: str = Form(...)):
+    tasks.append({"text": task, "done": False})
+    save_tasks(tasks)  # save to JSON
+    return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
 
+@app.post("/toggle/{task_id}", response_class=HTMLResponse)
+async def toggle_task(request: Request, task_id: int):
+    if 0 <= task_id < len(tasks):
+        tasks[task_id]["done"] = not tasks[task_id]["done"]
+        save_tasks(tasks)
+    return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
+
+@app.post("/delete/{task_id}", response_class=HTMLResponse)
+async def delete_task(request: Request, task_id: int):
+    if 0 <= task_id < len(tasks):
+        tasks.pop(task_id)
+        save_tasks(tasks)
+    return templates.TemplateResponse("index.html", {"request": request, "tasks": tasks})
